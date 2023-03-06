@@ -32,4 +32,33 @@ def handle_bob_trigger():
     with open(latest_recording_path, 'rb') as audio_file:
         chat_transcript = bob(audio_file)
 
-    # do something with chat_transcript (e.g., save to disk, display in UI, etc.)
+    # generate dynamic message for bob
+    prompt = "Here are some examples to inspire a random version of the Bob message:\n\n" + \
+             "- What's your question, boss?\n" + \
+             "- What's your question, human?\n" + \
+             "- What's your question, meat popsicle?\n" + \
+             "- How can I serve you, human?\n\n" + \
+             "Please generate a random version of the Bob message."
+    response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages)
+    
+    dynamic_message = response.choices[0].text.strip()
+
+    # create system message
+    system_message = {"role": "system", "content": dynamic_message}
+
+    # append system message to chat transcript
+    messages.append(system_message)
+
+    # say system message using text-to-speech engine
+    engine = pyttsx3.init()
+    engine.say(system_message['content'])
+    engine.runAndWait()
+
+    # create chat transcript
+    chat_transcript = ""
+    for message in messages:
+        if message['role'] != 'system':
+            chat_transcript += message['role'] + ": " + message['content'] + "\n\n"
+
+    # return chat transcript
+    return chat_transcript

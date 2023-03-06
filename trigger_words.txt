@@ -1,5 +1,1 @@
 Bob
-"I wonder"
-"I think"
-"What if"
-"Log this"
